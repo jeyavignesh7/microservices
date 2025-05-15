@@ -1,0 +1,44 @@
+
+services:
+  eureka-server: 
+    build: ./eureka-server
+    container_name: eureka-server
+    ports:
+      - "1111:1111"
+    environment:
+      - SERVER_PORT=1111
+      - EUREKA_INSTANCE_HOSTNAME=eureka-server
+    networks:
+      - tn-bridge-network
+  frontend-service:
+    build: ./tn-frontend-service
+#    container_name: frontend-service-inst1
+    ports:
+      - "2222-2230:2222"
+    environment:
+      - SERVER_PORT=2222
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:1111/eureka/
+      - SPRING_DATASOURCE_URL=jdbc:mysql://tradenet-mysql:3306/tradenet
+    networks:
+      - tn-bridge-network
+    deploy:
+      replicas: 2
+    depends_on:
+      - eureka-server
+  frontend-presentation:
+    build: ./tn-frontend-presentation
+    container_name: frontend-presentation-inst1
+    ports:
+      - "3333:3333"
+    environment:
+      - SERVER_PORT=3333
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:1111/eureka/
+    networks:
+      - tn-bridge-network
+    depends_on:
+      - eureka-server
+networks:
+  tn-bridge-network:
+    driver: bridge
+    external: true
+
