@@ -1,11 +1,13 @@
 spring:
   application:
     name: frontend-service
+
   datasource:
     url: jdbc:mysql://localhost:3307/tradenet
     username: tnfeuser
     password: P@ssw0rd1234
     driver-class-name: com.mysql.cj.jdbc.Driver
+
   jpa:
     properties:
       hibernate:
@@ -17,6 +19,18 @@ spring:
     producer:
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
+  cache:
+    type: redis
+    redis:
+      time-to-live: 60000
+  data:
+    redis:
+      cluster:
+          nodes:
+          - redis-node-01:7001
+          - redis-node-02:7002
+          - redis-node-03:7003
 
 # Discovery Server Access
 #  1. DEV ONLY: Reduce the lease renewal interval to speed up registration

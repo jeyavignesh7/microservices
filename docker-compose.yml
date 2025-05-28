@@ -48,6 +48,7 @@ services:
       - tn-bridge-network
     depends_on:
       - eureka-server
+      - frontend-service
 networks:
   tn-bridge-network:
     driver: bridge
