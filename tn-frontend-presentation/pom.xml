@@ -8,11 +8,11 @@
 		<version>3.4.4</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.jv.demo.tradenet.frontend</groupId>
+	<groupId>com.jv.demo.trade.frontend</groupId>
 	<artifactId>presentation</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>frontend-presentation-layer</name>
-	<description>Demo project for TradeNet Frontend Presentation Layer (Trader) Module</description>
+	<description>Demo project for Trade Frontend Presentation Layer (Trader) Module</description>
 	<url/>
 	<licenses>
 		<license/>

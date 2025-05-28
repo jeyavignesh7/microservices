@@ -10,6 +10,16 @@ services:
       - EUREKA_INSTANCE_HOSTNAME=eureka-server
     networks:
       - tn-bridge-network
+  msgbroker:
+    build: ./msgbroker
+    container_name: msgbroker-inst1
+    ports:
+      - "4444:4444"
+    environment:
+      - SERVER_PORT=4444
+      - SPRING_KAFKA_BOOTSTRAP-SERVERS=kafka:9092
+    networks:
+      - tn-bridge-network
   frontend-service:
     build: ./tn-frontend-service
 #    container_name: frontend-service-inst1
@@ -19,6 +29,7 @@ services:
       - SERVER_PORT=2222
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:1111/eureka/
       - SPRING_DATASOURCE_URL=jdbc:mysql://tradenet-mysql:3306/tradenet
+      - SPRING_KAFKA_BOOTSTRAP-SERVERS=kafka:9092
     networks:
       - tn-bridge-network
     deploy:
