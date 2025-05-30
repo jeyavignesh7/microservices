@@ -10,6 +10,7 @@ services:
       - EUREKA_INSTANCE_HOSTNAME=eureka-server
     networks:
       - tn-bridge-network
+
   msgbroker:
     build: ./msgbroker
     container_name: msgbroker-inst1
@@ -36,6 +37,35 @@ services:
       replicas: 2
     depends_on:
       - eureka-server
+
+  hs-service:
+    build: ./hs-service
+    ports:
+      - "2400:2400"
+    environment:
+      - SERVER_PORT=2400
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:1111/eureka/
+      - SPRING_DATASOURCE_URL=jdbc:mysql://tradenet-mysql:3306/tradenet
+      - SPRING_KAFKA_BOOTSTRAP-SERVERS=kafka:9092
+    networks:
+      - tn-bridge-network
+    depends_on:
+      - eureka-server
+
+  location-service:
+    build: ./location-service
+    ports:
+      - "2500:2500"
+    environment:
+      - SERVER_PORT=2500
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:1111/eureka/
+      - SPRING_DATASOURCE_URL=jdbc:mysql://tradenet-mysql:3306/tradenet
+      - SPRING_KAFKA_BOOTSTRAP-SERVERS=kafka:9092
+    networks:
+      - tn-bridge-network
+    depends_on:
+      - eureka-server
+
   frontend-presentation:
     build: ./tn-frontend-presentation
     container_name: frontend-presentation-inst1
@@ -49,6 +79,7 @@ services:
     depends_on:
       - eureka-server
       - frontend-service
+
 networks:
   tn-bridge-network:
     driver: bridge

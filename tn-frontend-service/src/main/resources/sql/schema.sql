@@ -23,3 +23,20 @@ CREATE TABLE tn_exchange_rate
     exc_rate NUMERIC(15,2) NULL,
     PRIMARY KEY (curr_code, eff_dtm, exp_dtm)
 );
+
+CREATE TABLE tn_hs
+(
+	hs_code VARCHAR(40) NOT NULL,
+    eff_dtm DATETIME NOT NULL,
+    exp_dtm DATETIME NOT NULL,
+    description VARCHAR(1000) NOT NULL, 
+    PRIMARY KEY (hs_code, eff_dtm, exp_dtm)
+);
+
+CREATE TABLE tn_country
+(
+	code VARCHAR(3) NOT NULL,
+    name VARCHAR(100) NOT NULL, 
+    PRIMARY KEY (code)
+);
+
