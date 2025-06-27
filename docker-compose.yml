@@ -4,9 +4,9 @@ services:
     build: ./eureka-server
     container_name: eureka-server
     ports:
-      - "1111:1111"
+      - "1101:1101"
     environment:
-      - SERVER_PORT=1111
+      - SERVER_PORT=1101
       - EUREKA_INSTANCE_HOSTNAME=eureka-server
     networks:
       - tn-bridge-network
@@ -15,9 +15,9 @@ services:
     build: ./msgbroker
     container_name: msgbroker-inst1
     ports:
-      - "4444:4444"
+      - "1201:1201"
     environment:
-      - SERVER_PORT=4444
+      - SERVER_PORT=1201
       - SPRING_KAFKA_BOOTSTRAP-SERVERS=kafka:9092
     networks:
       - tn-bridge-network
@@ -25,10 +25,10 @@ services:
     build: ./tn-frontend-service
 #    container_name: frontend-service-inst1
     ports:
-      - "2222-2230:2222"
+      - "1301-1310:1301"
     environment:
-      - SERVER_PORT=2222
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:1111/eureka/
+      - SERVER_PORT=1301
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:1101/eureka/
       - SPRING_DATASOURCE_URL=jdbc:mysql://tradenet-mysql:3306/tradenet
       - SPRING_KAFKA_BOOTSTRAP-SERVERS=kafka:9092
     networks:
@@ -41,10 +41,10 @@ services:
   hs-service:
     build: ./hs-service
     ports:
-      - "2400:2400"
+      - "1401:1401"
     environment:
-      - SERVER_PORT=2400
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:1111/eureka/
+      - SERVER_PORT=1401
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:1101/eureka/
       - SPRING_DATASOURCE_URL=jdbc:mysql://tradenet-mysql:3306/tradenet
       - SPRING_KAFKA_BOOTSTRAP-SERVERS=kafka:9092
     networks:
@@ -55,12 +55,26 @@ services:
   location-service:
     build: ./location-service
     ports:
-      - "2500:2500"
+      - "1501:1501"
     environment:
-      - SERVER_PORT=2500
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:1111/eureka/
+      - SERVER_PORT=1501
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:1101/eureka/
       - SPRING_DATASOURCE_URL=jdbc:mysql://tradenet-mysql:3306/tradenet
       - SPRING_KAFKA_BOOTSTRAP-SERVERS=kafka:9092
+    networks:
+      - tn-bridge-network
+    depends_on:
+      - eureka-server
+
+  company-service:
+    build: ./company-service
+    ports:
+      - "1601:1601"
+    environment:
+      - SERVER_PORT=1601
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:1101/eureka/
+      - SPRING_DATASOURCE_URL=jdbc:mysql://tradenet-mysql:3306/tradenet
+      - SPRING_KAFKA_BOOTSTRAP-SERVER=kafka:9092
     networks:
       - tn-bridge-network
     depends_on:
@@ -70,15 +84,30 @@ services:
     build: ./tn-frontend-presentation
     container_name: frontend-presentation-inst1
     ports:
-      - "3333:3333"
+      - "4401:4401"
     environment:
-      - SERVER_PORT=3333
-      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:1111/eureka/
+      - SERVER_PORT=4401
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:1101/eureka/
     networks:
       - tn-bridge-network
     depends_on:
       - eureka-server
       - frontend-service
+
+  api-gateway:
+    build: ./api-gateway
+    ports:
+      - "8001:8001"
+    environment:
+      - SERVER_PORT=8001
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:1101/eureka/
+    networks:
+      - tn-bridge-network
+    depends_on:
+      - eureka-server
+      - frontend-service
+      - hs-service
+      - location-service
 
 networks:
   tn-bridge-network:

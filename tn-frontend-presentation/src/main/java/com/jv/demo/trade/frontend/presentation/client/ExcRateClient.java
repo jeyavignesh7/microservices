@@ -9,9 +9,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
+/* To connect to the microservice directly */
 //@FeignClient(value="excrate-client", url="http://tn-frontend-service-inst1:2222/frontend-service")
+/* To connect to the microservice via Eureka and config from properties file */
 //@FeignClient(name="${tn.frontend.service.excrate.host}", path="${tn.frontend.service.excrate.path}")
-@FeignClient(name="FRONTEND-SERVICE", path="/frontend-service")
+/* To connect to the microservice via Eureka and hardcode properties */
+//@FeignClient(name="FRONTEND-SERVICE", path="/frontend-service")
+/* To connect to the microservice directly */
+@FeignClient(value="excrate-client", url="http://api-getway-inst1:8000/")
 @LoadBalancerClient
 public interface ExcRateClient {
 

@@ -22,5 +22,5 @@ eureka:
       defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
 
 server:
-  port: 1111   # HTTP (Tomcat) port
+  port: 1101   # HTTP (Tomcat) port
 
