@@ -80,6 +80,20 @@ services:
     depends_on:
       - eureka-server
 
+  auth-api-service:
+    build: ./auth-api
+    ports:
+      - "1701:1701"
+    environment:
+      - SERVER_PORT=1701
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://eureka-server:1101/eureka/
+      - SPRING_DATASOURCE_URL=jdbc:mysql://tradenet-mysql:3306/tradenet
+      - SPRING_KAFKA_BOOTSTRAP-SERVER=kafka:9092
+    networks:
+      - tn-bridge-network
+    depends_on:
+      - eureka-server
+
   frontend-presentation:
     build: ./tn-frontend-presentation
     container_name: frontend-presentation-inst1
@@ -108,6 +122,8 @@ services:
       - frontend-service
       - hs-service
       - location-service
+      - company-service
+      - auth-api-service
 
 networks:
   tn-bridge-network:

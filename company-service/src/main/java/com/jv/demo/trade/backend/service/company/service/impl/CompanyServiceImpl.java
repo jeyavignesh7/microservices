@@ -5,6 +5,7 @@ import com.jv.demo.trade.backend.service.company.domain.repos.CompanyRepos;
 import com.jv.demo.trade.backend.service.company.service.CompanyService;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -69,7 +70,7 @@ public class CompanyServiceImpl implements CompanyService {
     }
 
     @Override
-    public List<CompanyEntity> findByNameWithPagination(String name, int pageNo, int pageSize, String sortBy, String direction) {
+    public Page<CompanyEntity> findByNameWithPagination(String name, int pageNo, int pageSize, String sortBy, String direction) {
         Sort sort = Sort.by(sortBy);
         if("desc".equalsIgnoreCase(direction)) {
             sort = sort.descending();

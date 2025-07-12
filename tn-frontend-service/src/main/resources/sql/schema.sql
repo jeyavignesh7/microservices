@@ -17,7 +17,8 @@ USE tradenet;
 CREATE TABLE tn_user_cred
 (
 	user_id VARCHAR(20) NOT NULL, 
-    usr_pwd VARCHAR(1000) NOT NULL, 
+    password VARCHAR(1000) NOT NULL, 
+    email_id VARCHAR(100) NOT NULL, 
     eff_dtm DATETIME NOT NULL, 
     exp_dtm DATETIME NOT NULL, 
     last_pwd_change_dtm DATETIME NOT NULL, 

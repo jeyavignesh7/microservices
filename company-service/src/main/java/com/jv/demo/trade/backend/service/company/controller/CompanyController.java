@@ -15,12 +15,14 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @Validated
@@ -60,7 +62,7 @@ public class CompanyController {
     @ResponseStatus(HttpStatus.OK)
     public List<CompanyDto> findAll() {
         producer.sendMessage(Constants.TOPIC_MSG_FROM_TRADER, "Company findAll()");
-        return companyMapper.mapTo(companyService.findAll());
+        return companyMapper.mapToList(companyService.findAll());
     }
 
     @PostMapping("")
@@ -105,17 +107,18 @@ public class CompanyController {
             @PathVariable @Max(5) int pageSize,
             @PathVariable String sortBy,
             @PathVariable @Pattern(regexp="asc|desc|ASC|DESC") String sortDirection){
-        return companyMapper.mapTo(companyService.findAllWithPagination(pageNo, pageSize, sortBy, sortDirection));
+        return companyMapper.mapToList(companyService.findAllWithPagination(pageNo, pageSize, sortBy, sortDirection));
     }
 
     @GetMapping("/search/{pageNo}/{pageSize}/{sortBy}/{sortDirection}")
-    public List<CompanyDto> findByNameWithPagination(
+    public Page<CompanyDto> findByNameWithPagination(
             @RequestParam String name,
             @PathVariable int pageNo,
             @PathVariable @Max(5) int pageSize,
             @PathVariable String sortBy,
             @PathVariable @Pattern(regexp="asc|desc|ASC|DESC") String sortDirection){
-        return companyMapper.mapTo(companyService.findByNameWithPagination(name, pageNo, pageSize, sortBy, sortDirection));
+        return companyService.findByNameWithPagination(name, pageNo, pageSize, sortBy, sortDirection).map(companyMapper::mapTo);
+
     }
 
     @GetMapping("circuitbreaker")

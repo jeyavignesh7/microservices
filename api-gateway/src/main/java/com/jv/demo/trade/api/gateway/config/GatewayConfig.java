@@ -1,12 +1,17 @@
 package com.jv.demo.trade.api.gateway.config;
 
+
+import com.jv.demo.trade.backend.service.authapi.config.JwtAuthenticationFilter;
 import io.netty.resolver.DefaultAddressResolverGroup;
 import lombok.extern.apachecommons.CommonsLog;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.web.reactive.WebFluxProperties;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import reactor.netty.http.client.HttpClient;
 
 
@@ -14,12 +19,22 @@ import reactor.netty.http.client.HttpClient;
 @EnableDiscoveryClient
 @CommonsLog
 public class GatewayConfig {
+
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+
+    public GatewayConfig(JwtAuthenticationFilter jwtAuthenticationFilter){
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+    }
+
     @Bean
     public RouteLocator customRouteLocator(RouteLocatorBuilder builder){
         log.error(builder.routes().toString());
+        System.out.println("###############" + builder.routes().toString());
         return builder.routes()
-                .route("frontend-service", r -> r.path("/frontend-service/excrate/**")
+                .route("FRONTEND-SERVICE", r -> r.path("/frontend-service/excrate/**")
                         .uri("lb://FRONTEND-SERVICE"))
+                .route("AUTH-API-SERVICE", r -> r.path("/auth-api-service/auth/**")
+                        .uri("lb://AUTH-API-SERVICE"))
                 .route("HS-SERVICE", r -> r.path("/hs-service/hs/**")
                         .uri("lb://HS-SERVICE"))
              //   .route("LOCATION-SERVICE", r -> r.path("/location-service/country/**")
@@ -36,8 +51,11 @@ public class GatewayConfig {
                         .filters(f -> f.rewritePath("/company", "/company-service/company"))
                         .uri("lb://COMPANY-SERVICE"))
                 .route("COMPANY-SERVICE", r -> r.path("/company/**")
-                        .filters(f -> f.rewritePath("/company/(?<segment>.*)", "/company-service/company/${segment}"))
-                        .uri("lb://COMPANY-SERVICE"))
+                            .filters(f -> {
+                                f.rewritePath("/company/(?<segment>.*)", "/company-service/company/${segment}");
+                                return f.filter(jwtAuthenticationFilter.apply(new JwtAuthenticationFilter.Config()));
+                            })
+                            .uri("lb://COMPANY-SERVICE"))
 
                 // Need to try combining all possible paths to rewrite
                 /*
@@ -51,10 +69,16 @@ public class GatewayConfig {
                 .build();
     }
 
-    /*
     @Bean
     public HttpClient httpClient() {
         return HttpClient.create().resolver(DefaultAddressResolverGroup.INSTANCE);
     }
-    */
+
+/*
+    @Bean
+    WebFluxProperties webFluxProperties(){
+        return new WebFluxProperties();
+    }
+
+ */
 }
